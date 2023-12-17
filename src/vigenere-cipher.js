@@ -19,17 +19,37 @@ const { NotImplementedError } = require('../extensions/index.js');
  * reverseMachine.decrypt('AEIHQX SX DLLU!', 'alphonse') => '!NWAD TA KCATTA'
  * 
  */
+
 class VigenereCipheringMachine {
-  encrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  constructor(bool = true) {
+    this.type = bool;
   }
-  decrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+
+  crypt(str, key, type) {
+    if (!str || !key) throw new Error('Incorrect arguments!');
+    const arr = [];
+    const newStr = str.toUpperCase();
+    key = key.repeat(Math.ceil(str.length / key.length)).toUpperCase();
+    for (let i = 0, j = 0; i < newStr.length; i++, j++) {
+      if (newStr[i].charCodeAt() == 32) j--;
+      if (newStr[i].charCodeAt() < 65 || newStr[i].charCodeAt() > 90) arr.push(newStr[i])
+      else {
+        let index = newStr.charCodeAt(i) - 65;
+        let shift = key.charCodeAt(j) - 65;
+        arr.push(String.fromCharCode(65 + (type ? index + shift : index - shift + 26) % 26))
+      }
+    }
+    return this.type ? arr.join('') : arr.reverse().join('');
+  }
+
+  encrypt(str, key) {
+    return this.crypt(str, key, true);
+  }
+
+  decrypt(str, key) {
+    return this.crypt(str, key, false);
   }
 }
-
 module.exports = {
   VigenereCipheringMachine
 };
